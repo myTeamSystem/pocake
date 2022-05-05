@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\ORM\TableRegistry;
 
 /**
  * User Entity
@@ -30,6 +31,7 @@ class User extends Entity
      *
      * @var array
      */
+    // los true en pocas palabras son los datos que seran persistentes en la base de datos (como obligatorios)
     protected $_accessible = [
         'first_name' => true,
         'last_name' => true,
@@ -59,8 +61,58 @@ class User extends Entity
     */
     protected function _setPassword($value)
     {
-        $hasher = new DefaultPasswordHasher();
-        return $hasher->hash($value);
+        if(!empty($value)) // condicional para el monento que se edite el usuario no vuelva a encriptar el contenido del campo
+        {
+            $hasher = new DefaultPasswordHasher();
+            return $hasher->hash($value);
+        }
+            else 
+        {
+            $id_user = $this->_properties['id']; // de esta manera se recupera el id del usuario que se esta persistieno
+            $user = TableRegistry::get('Users')->recoverPassword($id_user); // para mantener el codigo ordenado creamo el metodo de las consulta de contraseña en UsersTabl
+            return $user; 
+        }    
 
     }
+
+    /**
+     * Metodo que transforma un string a uper case
+     * 
+     */
+    // protected function toUperCase($value) {
+    //     return strtoupper($value);
+    // }
+
+    protected function _getFirstName($firstName){
+        return strtoupper($firstName);
+    }
+
+    protected function _settFirstName($firstName){
+        return strtoupper($firstName);
+    }
+
+    protected function _getLastName($firstName){
+        return strtoupper($firstName);
+    }
+
+    protected function _setLastName($firstName){
+        return strtoupper($firstName);
+    }
+
+    protected function _getEmail($firstName){
+        return strtoupper($firstName);
+    }
+
+    protected function _setEmail($firstName){
+        return strtoupper($firstName);
+    }
+
+    // protected function _getRole($firstName){
+    //     return strtoupper($firstName);
+    // }
+
+    // protected function _setRole($firstName){
+    //     return strtoupper($firstName);
+    // }
+
 }

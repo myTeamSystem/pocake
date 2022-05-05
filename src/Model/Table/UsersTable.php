@@ -54,43 +54,70 @@ class UsersTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmptyString('id', null, 'create');
+                ->integer('id')
+                ->allowEmptyString('id', null, 'create');
+                // ->add('id', 'valid-numeric', ['rule', 'numeric'])
+                // ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->scalar('first_name')
-            ->maxLength('first_name', 100)
-            ->requirePresence('first_name', 'create')
-            ->notEmptyString('first_name');
+                ->requirePresence('first_name', 'create')
+                ->notEmptyString('first_name', __('El nombre (s) es requerido.'));
+        
+        $validator
+                ->requirePresence('last_name', 'create')
+                ->notEmptyString('last_name', __('El Apellido (s) es requerido.'));
 
         $validator
-            ->scalar('last_name')
-            ->maxLength('last_name', 100)
-            ->requirePresence('last_name', 'create')
-            ->notEmptyString('last_name');
+                ->add('email', 'valid-email', ['rule' => 'email', 'message' => __('La sintaxis no luce como un correo valido')])
+                ->requirePresence('email', 'create')
+                ->notEmptyString('email', __('El Correo es requerido.'));
 
         $validator
-            ->email('email')
-            ->requirePresence('email', 'create')
-            ->notEmptyString('email');
+                ->requirePresence('password', 'create')
+                ->notEmptyString('password', __('La Contraseña es requerido.'), 'create');
 
-        $validator
-            ->scalar('password')
-            ->maxLength('password', 255)
-            ->requirePresence('password', 'create')
-            ->notEmptyString('password');
+        
+         return $validator;       
 
-        $validator
-            ->scalar('role')
-            ->requirePresence('role', 'create')
-            ->notEmptyString('role');
+        //CODIGO CREADO POR BAKE
+        // $validator
+        //     ->integer('id')
+        //     ->allowEmptyString('id', null, 'create');
 
-        $validator
-            ->boolean('active')
-            ->requirePresence('active', 'create')
-            ->notEmptyString('active');
+        // $validator
+        //     ->scalar('first_name')
+        //     ->maxLength('first_name', 100)
+        //     ->requirePresence('first_name', 'create')
+        //     ->notEmptyString('first_name');
 
-        return $validator;
+        // $validator
+        //     ->scalar('last_name')
+        //     ->maxLength('last_name', 100)
+        //     ->requirePresence('last_name', 'create')
+        //     ->notEmptyString('last_name');
+
+        // $validator
+        //     ->email('email')
+        //     ->requirePresence('email', 'create')
+        //     ->notEmptyString('email');
+
+        // $validator
+        //     ->scalar('password')
+        //     ->maxLength('password', 255)
+        //     ->requirePresence('password', 'create')
+        //     ->notEmptyString('password');
+
+        // $validator
+        //     ->scalar('role')
+        //     ->requirePresence('role', 'create')
+        //     ->notEmptyString('role');
+
+        // $validator
+        //     ->boolean('active')
+        //     ->requirePresence('active', 'create')
+        //     ->notEmptyString('active');
+
+        // return $validator;
     }
 
     /**
@@ -102,8 +129,51 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['email'], __('Este correo ya esta registrado, ingrese uno diferente')));
 
         return $rules;
     }
+
+    /**4
+     * 
+     * FUNCION QUE PERMITE SOLO AUTEBNTICAR A LOS USUARIOS ACTIVOS
+     */
+    public function findAuth(\Cake\ORM\Query $query, array $options)
+    {
+        $query
+            ->select(['id', 'first_name', 'last_name', 'email', 'role', 'active', 'password'])
+            ->where(['Users.active' => 1]);
+        
+        return $query;
+    }
+
+
+    /**
+     * 
+     * METODO PARA RECUPERAR LA CONTRASEÑA DE UN USUARIO
+     */
+    public function recoverPassword($id)
+    {
+        $user = $this->get($id);
+        return $user->password;
+    }
+
+    /**
+     * 
+     * 
+     * Life Cycle Callback en donde se pregunta su es usuario admoinantes de eliminar lo
+     */
+
+     public function beforeDelete($event, $entity, $options)
+     {
+        // exit('antes de eliminar siiuu');
+        if($entity->role == 'admin')
+        {
+            return false;
+        }
+        else 
+        {
+            return true;
+        }
+     }
 }

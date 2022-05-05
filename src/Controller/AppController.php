@@ -51,5 +51,67 @@ class AppController extends Controller
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
          */
         //$this->loadComponent('Security');
+
+        /**
+         * 
+         * CARGAMOS EL COMPONENTE DE AUTENTIFIACION Y LO CONFIGURAMOS
+         * SERA MEDIANTE FORMULARIO CON LOS CAMPOS EMAIL Y PASSWORD DE USERS TABLE
+         */
+        $this->loadComponent('Auth', [
+            'authorize' => ['Controller'], // le decimos que la autorizacipon la manejara el controlador
+            'authenticate' => [
+                'Form' => [
+                    'fields' => [
+                        'username' => 'email',
+                        'password' => 'password',
+                    ],
+                    'finder' => 'auth'
+                ]
+            ],
+            'loginAction' => [           // indicamos la accion del login configurando el controlador y el metodo
+                'controller' => 'Users',
+                'action' => 'login'
+            ],
+            'authError' => 'Ingrese sus datos', // $this->Flash->error(__('Ingrese sus datos para iniciar session', ['key' => 'authError'])),
+            'loginRedirect' => [
+                'controller' => 'Users',
+                'action' => 'home'
+            ],
+            'logoutRedirect' => [
+                'controller' => 'Users',
+                'action' => 'login'
+            ],
+            'unauthorizedRedirect' => $this->referer(), // cuando un empleado no este autorizado rediriguira a la url de referencia o login
+            // 'unauthorizedRedirect' => $this->redirect(['controller' => 'Users', 'action' => 'home']), 
+        ]);
+    }
+
+    public function beforeRender(Event $event)
+    {
+        if (!array_key_exists('_serialize', $this->viewVars) &&
+        in_array($this->response->type(), ['application/json', 'application/xml'])
+        ) {
+
+        }
+    }
+
+    /**
+     * 
+     * FUNCION LIFECYCLE CALLBAK QUE ENVIARA A LAS VISTAS LOS DATOS DEL USUARIO AUTENTIFICADO
+     */
+    public function beforeFilter(Event $event)
+    {
+        // if (isset($this->params['requested'])) $this->Auth->allow($this->action); 
+       return $this->set('current_user', $this->Auth->user()); 
+    }
+
+    public function isAuthorized($user)
+    {
+        if(isset($user['role']) and $user['role'] === 'admin')
+        {
+            return true;
+        }
+
+        return false;
     }
 }

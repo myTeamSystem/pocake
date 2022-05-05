@@ -26,29 +26,31 @@ $cakeDescription = 'Site by Israel.rios';
     </title>
     <?= $this->Html->meta('icon') ?>
 
-    <?= $this->Html->css('base.css') ?>
-    <?= $this->Html->css('style.css') ?>
+    <?= $this->Html->css(['bootstrap.min.css', 'style']) ?>
+    <?= $this->Html->script(['jquery-2.2.4.min.js', 'bootstrap.min.js']) ?>
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
 <body>
-    <nav class="top-bar expanded" data-topbar role="navigation">
+    <!-- <nav class="top-bar expanded" data-topbar role="navigation">
         <ul class="title-area large-3 medium-4 columns">
             <li class="name">
-                <h1><a href=""><?= $this->fetch('title') ?></a></h1>
+                <h1><a href=""> </a></h1>
             </li>
         </ul>
         <div class="top-bar-section">
             <ul class="right">
-                <!-- <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
-                <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li> -->
+                <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
+                <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li>
             </ul>
         </div>
-    </nav>
+    </nav> -->
+   
+    <?= $this->element('menu') ?>
     <?= $this->Flash->render() ?>
-    <div class="container clearfix">
+    <div class="container">
         <?= $this->fetch('content') ?>
     </div>
     <footer>

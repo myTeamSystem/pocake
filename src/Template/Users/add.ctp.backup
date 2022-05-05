@@ -1,6 +1,6 @@
 <h2>Agregar usuario</h2>
 <?php
-    echo $this->Form->create($user); // se inicializa
+    echo $this->Form->create($user); // se inicializa variable enviadad desde el controlador
     echo $this->Form->input('first_name');
     echo $this->Form->input('last_name');
     echo $this->Form->input('email');
@@ -10,3 +10,13 @@
     echo $this->Form->button('Crear usuario');
     echo $this->Form->end(); // se cierra despues
 ?>
+
+listar datos 
+
+<ul>
+    <?php foreach($users as $user): ?>
+    <li>
+        <?= $user->first_name; ?>
+    </li>
+    <?php endforeach; ?>
+</ul>

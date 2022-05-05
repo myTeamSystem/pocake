@@ -22,7 +22,7 @@ class CreateBookmarks extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
-        $table->addColumn('url', 'text', [
+        $table->addColumn('url', 'text', [  
             'default' => null,
             'null' => false,
         ]);
